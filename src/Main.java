@@ -69,41 +69,44 @@ public class Main {
 
         System.out.println("Тест 6");
         System.out.println("Обновляем задачу 1");
-        Task task1Updated = new Task(task1Created.getId(),
-                "Новое название задачи 1", "Новое описание задачи 1", Status.IN_PROGRESS);
-        System.out.println("Задача с обновлёнными полями: " + taskManager.updateTask(task1Updated));
+        task1Created.setStatus(Status.IN_PROGRESS);
+        System.out.println("Задача 1 обновлена: " + taskManager.updateTask(task1Created));
         System.out.println();
 
         System.out.println("Тест 7");
         System.out.println("Обновляем эпик");
-        Epic epic1Updated = new Epic(epic1Created.getId(),
-                "Новое название эпика 1", "Новое описание эпика 1");
-        System.out.println("Эпик с обновлёнными полями: " + taskManager.updateEpic(epic1Updated));
-
+        epic1Created.setName("Новое имя эпика 1");
+        epic1Created.setDescription("Новое описание эпика 1");
+        System.out.println("Эпик с обновлёнными полями: " + taskManager.updateEpic(epic1Created));
         System.out.println();
 
         System.out.println("Тест 8");
         System.out.println("Обновляем подзадачу");
-        Subtask subtask1_1Updated = new Subtask(subtask1_1Created.getId(), "Новое название подзадачи 1-1",
-                "Новое описание подзадачи 1-1", Status.DONE, epic1Updated.getId());
-        System.out.println("Подзадача 1-1 с обновлёнными полями: " + taskManager.updateSubtask(subtask1_1Updated));
-        System.out.println("В списке подзадач эпика 1 подзадача 1-1 с обновлёнными полями: ");
-        System.out.println(taskManager.getSubtasksByEpic(epic1Updated));
-        System.out.println("Статус эпика 1 рассчитался верно (ожидается IN_PROGRESS): " + epic1Updated.getStatus());
+        subtask1_1Created.setStatus(Status.DONE);
+        System.out.println("Подзадача 1-1 обновлена: " + taskManager.updateSubtask(subtask1_1Created));
+        System.out.println("В списке подзадач эпика 1 подзадача 1-1 обновлена: ");
+        System.out.println(taskManager.getSubtasksByEpic(epic1Created.getId()));
+        System.out.println("Статус эпика 1 рассчитался верно (ожидается IN_PROGRESS): " + epic1Created.getStatus());
         System.out.println();
 
         System.out.println("Тест 9");
         System.out.println("Удаляем задачу по id");
-        System.out.println("Задача 1 удалена: " + taskManager.deleteTaskById(task1Created.getId()));
+        taskManager.deleteTaskById(task1Created.getId());
+        System.out.println("Задача 1 удалена из списка задач: " + taskManager.getAllTasks());
         System.out.println();
 
         System.out.println("Тест 10");
         System.out.println("Удаляем подзадачу по id");
-        System.out.println("Подзадача 1-1 удалена: " + taskManager.deleteSubtaskById(subtask1_1Updated.getId()));
+        taskManager.deleteSubtaskById(subtask1_1Created.getId());
+        System.out.println("Подзадача 1-1 удалена из списка подзадач: " + taskManager.getAllSubtasks());
+        System.out.print("Подзадача удалена из списка задач эпика 1: ");
+        System.out.println(taskManager.getSubtasksByEpic(subtask1_1Created.getEpicId()));
+        System.out.println("Статус эпика 1 рассчитался верно (ожидается NEW): " + epic1Created.getStatus());
         System.out.println();
 
         System.out.println("Тест 11");
         System.out.println("Удаляем эпик по id");
-        System.out.println("Эпик 1 удалён: " + taskManager.deleteEpicById(epic1Created.getId()));
+        taskManager.deleteEpicById(epic1Created.getId());
+        System.out.println("Эпик 1 удалён из списка эпиков: " + taskManager.getAllEpics());
     }
 }
