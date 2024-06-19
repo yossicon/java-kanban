@@ -1,12 +1,18 @@
-import manager.TaskManager;
-import task.*;
+import taskManager.Managers;
+import taskManager.TaskManager;
+
+import task.Epic;
+import task.Status;
+import task.Subtask;
+import task.Task;
+
 import java.util.List;
 
 public class Main {
 
     public static void main(String[] args) {
 
-        TaskManager taskManager = new TaskManager();
+        TaskManager taskManager = Managers.getDefault();
 
         System.out.println("Тест 1");
         List<Task> tasks = taskManager.getAllTasks();
@@ -90,12 +96,31 @@ public class Main {
         System.out.println();
 
         System.out.println("Тест 9");
+        System.out.println("Просматриваем 11 задач:");
+        taskManager.getTaskById(2);
+        taskManager.getEpicById(3);
+        taskManager.getSubtaskById(4);
+        taskManager.getSubtaskById(5);
+        taskManager.getEpicById(3);
+        taskManager.getTaskById(1);
+        taskManager.getSubtaskById(7);
+        taskManager.getTaskById(2);
+        taskManager.getEpicById(3);
+        taskManager.getSubtaskById(4);
+        taskManager.getTaskById(1);
+        System.out.println("Ожидается список из 10 последних просмотренных задач:");
+        for (Task task : taskManager.getHistory()) {
+            System.out.println(task);
+        }
+        System.out.println();
+
+        System.out.println("Тест 10");
         System.out.println("Удаляем задачу по id");
         taskManager.deleteTaskById(task1Created.getId());
         System.out.println("Задача 1 удалена из списка задач: " + taskManager.getAllTasks());
         System.out.println();
 
-        System.out.println("Тест 10");
+        System.out.println("Тест 11");
         System.out.println("Удаляем подзадачу по id");
         taskManager.deleteSubtaskById(subtask1_1Created.getId());
         System.out.println("Подзадача 1-1 удалена из списка подзадач: " + taskManager.getAllSubtasks());
@@ -104,9 +129,11 @@ public class Main {
         System.out.println("Статус эпика 1 рассчитался верно (ожидается NEW): " + epic1Created.getStatus());
         System.out.println();
 
-        System.out.println("Тест 11");
+        System.out.println("Тест 12");
         System.out.println("Удаляем эпик по id");
         taskManager.deleteEpicById(epic1Created.getId());
         System.out.println("Эпик 1 удалён из списка эпиков: " + taskManager.getAllEpics());
+        System.out.println();
     }
 }
+
