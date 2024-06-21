@@ -32,7 +32,7 @@ class InMemoryTaskManagerTest {
 
         assertNotNull(tasks, "Задачи не возвращаются.");
         assertEquals(1, tasks.size(), "Неверное количество задач.");
-        assertEquals(task, tasks.getFirst(), "Задачи не совпадают.");
+        assertEquals(task, tasks.get(0), "Задачи не совпадают.");
     }
 
     @Test
@@ -54,10 +54,10 @@ class InMemoryTaskManagerTest {
 
         assertNotNull(epics, "Эпики не возвращаются.");
         assertEquals(1, epics.size(), "Неверное количество эпиков.");
-        assertEquals(epic, epics.getFirst(), "Эпики не совпадают.");
+        assertEquals(epic, epics.get(0), "Эпики не совпадают.");
         assertNotNull(subtasks, "Подзадачи не возвращаются.");
         assertEquals(1, subtasks.size(), "Неверное количество подзадач.");
-        assertEquals(subtask, subtasks.getFirst(), "Подзадачи не совпадают.");
+        assertEquals(subtask, subtasks.get(0), "Подзадачи не совпадают.");
     }
 
     //проверьте, что задачи с заданным id и сгенерированным id не конфликтуют внутри менеджера
@@ -79,10 +79,10 @@ class InMemoryTaskManagerTest {
         historyManager.add(task);
         List<Task> tasks = historyManager.getHistory();
 
-        assertEquals(task.getId(), tasks.getFirst().getId(), "ID не равны");
-        assertEquals(task.getName(), tasks.getFirst().getName(), "Названия не равны");
-        assertEquals(task.getDescription(), tasks.getFirst().getDescription(), "Описания не равны");
-        assertEquals(task.getStatus(), tasks.getFirst().getStatus(), "Статусы не равны");
+        assertEquals(task.getId(), tasks.get(0).getId(), "ID не равны");
+        assertEquals(task.getName(), tasks.get(0).getName(), "Названия не равны");
+        assertEquals(task.getDescription(), tasks.get(0).getDescription(), "Описания не равны");
+        assertEquals(task.getStatus(), tasks.get(0).getStatus(), "Статусы не равны");
     }
 
     @Test
@@ -167,7 +167,7 @@ class InMemoryTaskManagerTest {
         taskManager.updateTask(task1);
         List<Task> tasks = taskManager.getAllTasks();
 
-        assertEquals("Новое имя", tasks.getFirst().getName(), "Задача не обновлена");
+        assertEquals("Новое имя", tasks.get(0).getName(), "Задача не обновлена");
     }
 
     @Test
@@ -178,7 +178,7 @@ class InMemoryTaskManagerTest {
         taskManager.updateEpic(epic1);
         List<Epic> epics = taskManager.getAllEpics();
 
-        assertEquals("Новое описание", epics.getFirst().getDescription(), "Эпик не обновлен");
+        assertEquals("Новое описание", epics.get(0).getDescription(), "Эпик не обновлен");
 
         Subtask subtask = new Subtask("Подзадача", "Описание", epic1.getId());
         taskManager.createTask(subtask);
@@ -187,7 +187,7 @@ class InMemoryTaskManagerTest {
         taskManager.updateSubtask(subtask1);
         List<Subtask> subtasks = taskManager.getAllSubtasks();
 
-        assertEquals(IN_PROGRESS, subtasks.getFirst().getStatus(), "Подзадача не обновлена");
+        assertEquals(IN_PROGRESS, subtasks.get(0).getStatus(), "Подзадача не обновлена");
     }
 
     @Test
