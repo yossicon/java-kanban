@@ -8,10 +8,7 @@ import task.Task;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
+import static org.junit.jupiter.api.Assertions.*;
 import static task.Status.DONE;
 import static task.Status.IN_PROGRESS;
 
@@ -149,7 +146,7 @@ class InMemoryTaskManagerTest {
 
         Subtask subtask = new Subtask("Подзадача", "Описание", epic.getId());
         taskManager.createSubtask(subtask);
-        Subtask subtask1 = new Subtask(3,"Подзадача1", "Описание1", DONE, epic.getId());
+        Subtask subtask1 = new Subtask(3, "Подзадача1", "Описание1", DONE, epic.getId());
         taskManager.createSubtask(subtask1);
 
         assertEquals(IN_PROGRESS, epic.getStatus(), "Статус эпика неверен");
@@ -205,5 +202,17 @@ class InMemoryTaskManagerTest {
         List<Subtask> subtasksByEpic1 = taskManager.getSubtasksByEpic(epic.getId());
 
         assertEquals(subtasksByEpic, subtasksByEpic1, "Списки подзадач не равны");
+    }
+
+    @Test
+    void shouldNotReturnDeletedSubtaskById() {
+        Epic epic = new Epic("Эпик", "Описание");
+        taskManager.createEpic(epic);
+
+        Subtask subtask = new Subtask("Подзадача", "Описание", epic.getId());
+        taskManager.createSubtask(subtask);
+        taskManager.deleteSubtaskById(subtask.getId());
+
+        assertNull(taskManager.getSubtaskById(subtask.getId()), "Удаленная подзадача хранит старый айди");
     }
 }
