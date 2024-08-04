@@ -1,4 +1,4 @@
-package taskManager;
+package TaskManager;
 
 import org.junit.jupiter.api.Test;
 import task.Epic;
