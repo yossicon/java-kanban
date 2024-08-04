@@ -18,15 +18,15 @@ public class Main {
         Task task2Created = taskManager.createTask(task2);
         Epic epic1 = new Epic("Эпик 1 (с 3 подзадачами)", "Описание эпика 1");
         Epic epic1Created = taskManager.createEpic(epic1);
-        Subtask subtask1_1 = new Subtask("Подзадача 1-1", "Описание подзадачи 1-1",
+        Subtask subtask1 = new Subtask("Подзадача 1-1", "Описание подзадачи 1-1",
                 epic1Created.getId());
-        Subtask subtask1_1Created = taskManager.createSubtask(subtask1_1);
-        Subtask subtask1_2 = new Subtask("Подзадача 1-2", "Описание подзадачи 1-2",
+        Subtask subtask1Created = taskManager.createSubtask(subtask1);
+        Subtask subtask2 = new Subtask("Подзадача 1-2", "Описание подзадачи 1-2",
                 epic1Created.getId());
-        Subtask subtask1_2Created = taskManager.createSubtask(subtask1_2);
-        Subtask subtask1_3 = new Subtask("Подзадача 1-3", "Описание подзадачи 1-3",
+        Subtask subtask2Created = taskManager.createSubtask(subtask2);
+        Subtask subtask3 = new Subtask("Подзадача 1-3", "Описание подзадачи 1-3",
                 epic1Created.getId());
-        Subtask subtask1_3Created = taskManager.createSubtask(subtask1_3);
+        Subtask subtask3Created = taskManager.createSubtask(subtask3);
         Epic epic2 = new Epic("Эпик 2 (без подзадач)", "Описание эпика 2");
         Epic epic2Created = taskManager.createEpic(epic2);
 
@@ -35,15 +35,15 @@ public class Main {
         System.out.println(taskManager.getHistory());
         taskManager.getEpicById(epic2Created.getId());
         System.out.println(taskManager.getHistory());
-        taskManager.getSubtaskById(subtask1_1Created.getId());
+        taskManager.getSubtaskById(subtask1Created.getId());
         System.out.println(taskManager.getHistory());
-        taskManager.getSubtaskById(subtask1_3Created.getId());
+        taskManager.getSubtaskById(subtask3Created.getId());
         System.out.println(taskManager.getHistory());
         taskManager.getTaskById(task1Created.getId());
         System.out.println(taskManager.getHistory());
         taskManager.getTaskById(task2Created.getId());
         System.out.println(taskManager.getHistory());
-        taskManager.getSubtaskById(subtask1_2Created.getId());
+        taskManager.getSubtaskById(subtask2Created.getId());
         System.out.println(taskManager.getHistory());
         taskManager.getTaskById(task1Created.getId());
         System.out.println(taskManager.getHistory());
