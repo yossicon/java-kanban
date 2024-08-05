@@ -1,5 +1,6 @@
 package manager;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import task.Epic;
 import task.Subtask;
@@ -14,104 +15,109 @@ import static task.Status.IN_PROGRESS;
 
 class InMemoryTaskManagerTest {
 
-    TaskManager taskManager = Managers.getDefault();
+    TaskManager taskManager;
+    HistoryManager historyManager;
+    Task task1;
+    Task task2;
+    Epic epic1;
+    Epic epic2;
+    Subtask subtask1;
+    Subtask subtask2;
+
+
+    @BeforeEach
+    void beforeEach() {
+        taskManager = Managers.getDefault();
+        historyManager = Managers.getDefaultHistory();
+
+        task1 = new Task("Задача1", "Описание1");
+        taskManager.createTask(task1);
+        epic1 = new Epic("Эпик1", "Описание1");
+        taskManager.createEpic(epic1);
+        epic2 = new Epic("Эпик2", "Описание2");
+        taskManager.createEpic(epic2);
+        subtask1 = new Subtask("Подзадача1", "Описание1", epic1.getId());
+        taskManager.createSubtask(subtask1);
+        subtask2 = new Subtask(3, "Подзадача2", "Описание2", DONE, epic1.getId());
+        taskManager.createSubtask(subtask2);
+        task2 = new Task("Задача2", "Описание2");
+        taskManager.createTask(task2);
+
+    }
 
     //проверьте, что InMemoryTaskManager действительно добавляет задачи разного типа и может найти их по id
     @Test
     void shouldCreateTask() {
-        Task task = new Task("Задача", "Описание");
-        taskManager.createTask(task);
-        Task task1 = taskManager.getTaskById(task.getId());
+        Task sameTask = taskManager.getTaskById(task1.getId());
         assertNotNull(task1, "Задача не найдена.");
-        assertEquals(task, task1, "Задачи не совпадают.");
+        assertEquals(task1, sameTask, "Задачи не совпадают.");
 
         List<Task> tasks = taskManager.getAllTasks();
 
         assertNotNull(tasks, "Задачи не возвращаются.");
-        assertEquals(1, tasks.size(), "Неверное количество задач.");
-        assertEquals(task, tasks.get(0), "Задачи не совпадают.");
+        assertEquals(2, tasks.size(), "Неверное количество задач.");
+        assertEquals(task1, tasks.get(0), "Задачи не совпадают.");
     }
 
     @Test
     void shouldCreateEpicAndSubtask() {
-        Epic epic = new Epic("Эпик", "Описание");
-        taskManager.createEpic(epic);
-        Subtask subtask = new Subtask("Подзадача", "Описание", epic.getId());
-        taskManager.createSubtask(subtask);
-        Epic epic1 = taskManager.getEpicById(epic.getId());
-        Subtask subtask1 = taskManager.getSubtaskById(subtask.getId());
+        Epic sameEpic = taskManager.getEpicById(epic1.getId());
+        Subtask sameSubtask = taskManager.getSubtaskById(subtask1.getId());
 
-        assertNotNull(epic1, "Эпик не найден.");
-        assertEquals(epic, epic1, "Эпики не совпадают.");
-        assertNotNull(subtask1, "Подзадача не найдена.");
-        assertEquals(subtask, subtask1, "Подзадачи не совпадают.");
+        assertNotNull(sameEpic, "Эпик не найден.");
+        assertEquals(epic1, sameEpic, "Эпики не совпадают.");
+        assertNotNull(sameSubtask, "Подзадача не найдена.");
+        assertEquals(subtask1, sameSubtask, "Подзадачи не совпадают.");
 
         List<Epic> epics = taskManager.getAllEpics();
         List<Subtask> subtasks = taskManager.getAllSubtasks();
 
         assertNotNull(epics, "Эпики не возвращаются.");
-        assertEquals(1, epics.size(), "Неверное количество эпиков.");
-        assertEquals(epic, epics.get(0), "Эпики не совпадают.");
+        assertEquals(2, epics.size(), "Неверное количество эпиков.");
+        assertEquals(epic1, epics.get(0), "Эпики не совпадают.");
         assertNotNull(subtasks, "Подзадачи не возвращаются.");
-        assertEquals(1, subtasks.size(), "Неверное количество подзадач.");
-        assertEquals(subtask, subtasks.get(0), "Подзадачи не совпадают.");
+        assertEquals(2, subtasks.size(), "Неверное количество подзадач.");
+        assertEquals(subtask1, subtasks.get(0), "Подзадачи не совпадают.");
     }
 
     //проверьте, что задачи с заданным id и сгенерированным id не конфликтуют внутри менеджера
     @Test
     void addAndGeneratedIdsShouldBeEqual() {
-        Task task = new Task("Задача", "Описание");
-        taskManager.createTask(task);
-        Task task1 = new Task(1, "Задача1", "Описание1");
+        Task generatedTask = new Task(1, "Задача1", "Описание1");
 
-        assertEquals(task.getId(), task1.getId(), "Задачи конфликтуют");
+        assertEquals(task1.getId(), generatedTask.getId(), "Задачи конфликтуют");
     }
 
     //создайте тест, в котором проверяется неизменность задачи (по всем полям) при добавлении задачи в менеджер
     @Test
     void shouldNotChangeTaskWhenAddInManager() {
-        HistoryManager historyManager = Managers.getDefaultHistory();
-        Task task = new Task("Задача", "Описание");
-        taskManager.createTask(task);
-        historyManager.add(task);
+        historyManager.add(task1);
         List<Task> tasks = historyManager.getHistory();
 
-        assertEquals(task.getId(), tasks.get(0).getId(), "ID не равны");
-        assertEquals(task.getName(), tasks.get(0).getName(), "Названия не равны");
-        assertEquals(task.getDescription(), tasks.get(0).getDescription(), "Описания не равны");
-        assertEquals(task.getStatus(), tasks.get(0).getStatus(), "Статусы не равны");
+        assertEquals(task1.getId(), tasks.get(0).getId(), "ID не равны");
+        assertEquals(task1.getName(), tasks.get(0).getName(), "Названия не равны");
+        assertEquals(task1.getDescription(), tasks.get(0).getDescription(), "Описания не равны");
+        assertEquals(task1.getStatus(), tasks.get(0).getStatus(), "Статусы не равны");
     }
 
     @Test
     void shouldTrueWhenTaskDeletedById() {
-        Task task = new Task("Задача", "Описание");
-        taskManager.createTask(task);
-        taskManager.deleteTaskById(task.getId());
-        List<Task> tasks = taskManager.getAllTasks();
+        taskManager.deleteTaskById(task1.getId());
 
-        assertTrue(tasks.isEmpty(), "Список задач не пуст");
+        assertNull(taskManager.getTaskById(task1.getId()), "Задача не удалена");
     }
 
     @Test
     void shouldTrueWhenEpicAndItsSubtaskDeletedById() {
-        Epic epic = new Epic("Эпик", "Описание");
-        taskManager.createEpic(epic);
-        Subtask subtask = new Subtask("Подзадача", "Описание", epic.getId());
-        taskManager.createSubtask(subtask);
-        taskManager.deleteEpicById(epic.getId());
-        List<Epic> epics = taskManager.getAllEpics();
+        taskManager.deleteEpicById(epic1.getId());
         List<Subtask> subtasks = taskManager.getAllSubtasks();
 
-        assertTrue(epics.isEmpty(), "Список эпиков не пуст");
-        assertTrue(subtasks.isEmpty(), "Список подзадач не пуст");
+        assertNull(taskManager.getEpicById(epic1.getId()), "Эпик не удален");
+        assertTrue(subtasks.isEmpty(), "Подзадачи не удалены");
     }
 
     @Test
     void shouldTrueWhenAllTasksDeleted() {
-        Task task = new Task("Задача", "Описание");
-        taskManager.createTask(task);
-        Task task1 = new Task("Задача1", "Описание1");
-        taskManager.createTask(task1);
         taskManager.deleteAllTasks();
         List<Task> tasks = taskManager.getAllTasks();
 
@@ -120,16 +126,6 @@ class InMemoryTaskManagerTest {
 
     @Test
     void shouldTrueWhenAllEpicsAndSubtasksDeleted() {
-        Epic epic = new Epic("Эпик", "Описание");
-        taskManager.createEpic(epic);
-        Epic epic1 = new Epic("Эпик1", "Описание1");
-        taskManager.createEpic(epic1);
-
-        Subtask subtask = new Subtask("Подзадача", "Описание", epic.getId());
-        taskManager.createSubtask(subtask);
-        Subtask subtask1 = new Subtask("Подзадача1", "Описание1", epic.getId());
-        taskManager.createSubtask(subtask1);
-
         taskManager.deleteAllSubtasks();
         List<Subtask> subtasks = taskManager.getAllSubtasks();
         taskManager.deleteAllEpics();
@@ -141,27 +137,17 @@ class InMemoryTaskManagerTest {
 
     @Test
     void shouldUpdateEpicStatus() {
-        Epic epic = new Epic("Эпик", "Описание");
-        taskManager.createEpic(epic);
+        assertEquals(IN_PROGRESS, epic1.getStatus(), "Статус эпика неверен");
 
-        Subtask subtask = new Subtask("Подзадача", "Описание", epic.getId());
-        taskManager.createSubtask(subtask);
-        Subtask subtask1 = new Subtask(3, "Подзадача1", "Описание1", DONE, epic.getId());
-        taskManager.createSubtask(subtask1);
+        taskManager.deleteSubtaskById(subtask1.getId());
 
-        assertEquals(IN_PROGRESS, epic.getStatus(), "Статус эпика неверен");
-
-        taskManager.deleteSubtaskById(subtask.getId());
-
-        assertEquals(DONE, epic.getStatus(), "Статус эпика неверен");
+        assertEquals(DONE, epic1.getStatus(), "Статус эпика неверен");
     }
 
     @Test
     void shouldUpdateTask() {
-        Task task = new Task("Задача", "Описание");
-        taskManager.createTask(task);
-        Task task1 = new Task(task.getId(), "Новое имя", "Описание");
-        taskManager.updateTask(task1);
+        Task taskToUpdate = new Task(task1.getId(), "Новое имя", "Описание");
+        taskManager.updateTask(taskToUpdate);
         List<Task> tasks = taskManager.getAllTasks();
 
         assertEquals("Новое имя", tasks.get(0).getName(), "Задача не обновлена");
@@ -169,19 +155,15 @@ class InMemoryTaskManagerTest {
 
     @Test
     void shouldUpdateEpicAndSubtask() {
-        Epic epic = new Epic("Эпик", "Описание");
-        taskManager.createEpic(epic);
-        Epic epic1 = new Epic("Эпик1", "Новое описание");
-        taskManager.updateEpic(epic1);
+        Epic epicToUpdate = new Epic("Эпик1", "Новое описание");
+        taskManager.updateEpic(epicToUpdate);
         List<Epic> epics = taskManager.getAllEpics();
 
         assertEquals("Новое описание", epics.get(0).getDescription(), "Эпик не обновлен");
 
-        Subtask subtask = new Subtask("Подзадача", "Описание", epic1.getId());
-        taskManager.createTask(subtask);
-        Subtask subtask1 = new Subtask(subtask.getId(), "Подзадача",
+        Subtask subtaskToUpdate = new Subtask(subtask1.getId(), "Подзадача",
                 "Описание", IN_PROGRESS, epic1.getId());
-        taskManager.updateSubtask(subtask1);
+        taskManager.updateSubtask(subtaskToUpdate);
         List<Subtask> subtasks = taskManager.getAllSubtasks();
 
         assertEquals(IN_PROGRESS, subtasks.get(0).getStatus(), "Подзадача не обновлена");
@@ -189,30 +171,18 @@ class InMemoryTaskManagerTest {
 
     @Test
     void shouldReturnSubtasksByEpic() {
-        Epic epic = new Epic("Эпик", "Описание");
-        taskManager.createEpic(epic);
-
-        Subtask subtask = new Subtask("Подзадача", "Описание", epic.getId());
-        taskManager.createSubtask(subtask);
-        Subtask subtask1 = new Subtask("Подзадача1", "Описание1", epic.getId());
-        taskManager.createSubtask(subtask1);
         List<Subtask> subtasksByEpic = new ArrayList<>();
-        subtasksByEpic.add(subtask);
         subtasksByEpic.add(subtask1);
-        List<Subtask> subtasksByEpic1 = taskManager.getSubtasksByEpic(epic.getId());
+        subtasksByEpic.add(subtask2);
+        List<Subtask> subtasksByEpic1 = taskManager.getSubtasksByEpic(epic1.getId());
 
         assertEquals(subtasksByEpic, subtasksByEpic1, "Списки подзадач не равны");
     }
 
     @Test
     void shouldNotReturnDeletedSubtaskById() {
-        Epic epic = new Epic("Эпик", "Описание");
-        taskManager.createEpic(epic);
+        taskManager.deleteSubtaskById(subtask1.getId());
 
-        Subtask subtask = new Subtask("Подзадача", "Описание", epic.getId());
-        taskManager.createSubtask(subtask);
-        taskManager.deleteSubtaskById(subtask.getId());
-
-        assertNull(taskManager.getSubtaskById(subtask.getId()), "Удаленная подзадача хранит старый айди");
+        assertNull(taskManager.getSubtaskById(subtask1.getId()), "Удаленная подзадача хранит старый айди");
     }
 }

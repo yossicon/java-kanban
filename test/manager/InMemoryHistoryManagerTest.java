@@ -1,5 +1,6 @@
 package manager;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import task.Task;
 
@@ -10,13 +11,19 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class InMemoryHistoryManagerTest {
 
-    HistoryManager historyManager = Managers.getDefaultHistory();
-    Task task = new Task(1, "Задача", "Описание задачи");
+    HistoryManager historyManager;
+    Task task;
+
+    @BeforeEach
+    void beforeEach() {
+        historyManager = Managers.getDefaultHistory();
+        task = new Task(1, "Задача", "Описание задачи");
+        historyManager.add(task);
+    }
 
 
     @Test
     void shouldAddTaskInHistory() {
-        historyManager.add(task);
         final List<Task> history = historyManager.getHistory();
         assertNotNull(history, "История пустая");
         assertEquals(1, history.size(), "История пустая");
@@ -25,7 +32,6 @@ class InMemoryHistoryManagerTest {
 
     @Test
     void shouldRemoveNode() {
-        historyManager.add(task);
         final List<Task> history = historyManager.getHistory();
         assertNotNull(history, "История пустая");
 
