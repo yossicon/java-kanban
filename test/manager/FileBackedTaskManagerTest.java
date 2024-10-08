@@ -8,7 +8,6 @@ import task.Subtask;
 import task.Task;
 
 import java.io.File;
-import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -30,7 +29,7 @@ class FileBackedTaskManagerTest {
     }
 
     @Test
-    void shouldSaveAndLoadEmptyFile() throws IOException {
+    void shouldSaveAndLoadEmptyFile() {
         fileBackedTaskManager.save();
         FileBackedTaskManager loadedManager = FileBackedTaskManager.loadFromFile(file);
         assertTrue(loadedManager.getAllTasks().isEmpty(), "Список загруженных задач не пуст");
@@ -39,7 +38,7 @@ class FileBackedTaskManagerTest {
     }
 
     @Test
-    void shouldSaveAndLoadTasks() throws IOException {
+    void shouldSaveAndLoadTasks() {
         Task task1 = fileBackedTaskManager.createTask(new Task("Задача 1", "Описание задачи 1"));
         Task task2 = fileBackedTaskManager.createTask(new Task("Задача 2", "Описание задачи 2"));
         Task task3 = fileBackedTaskManager.createTask(new Task("Задача 3", "Описание задачи 3"));
