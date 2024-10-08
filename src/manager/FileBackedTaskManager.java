@@ -6,20 +6,32 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
-    private final File file;
+    private static final String PATH_TO_FILE = "./src";
+    private static File file = new File(PATH_TO_FILE, "file.csv");
 
     public FileBackedTaskManager(File file) {
         this.file = file;
     }
 
     public void save() {
-        try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file))) {
+        try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file, StandardCharsets.UTF_8))) {
             bufferedWriter.write("id,type,name,status,description,epic\n");
 
+            if (file.isFile()) {
+                file.delete();
+            }
+
+            file = new File(PATH_TO_FILE, "file.csv");
+
+            if (!Files.exists(file.toPath())) {
+                Files.createFile(Paths.get(PATH_TO_FILE, "file.csv"));
+            }
 
             for (Task task : getAllTasks()) {
                 String taskToString = toString(task);
@@ -36,13 +48,12 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 bufferedWriter.write(taskToString + "\n");
             }
         } catch (IOException e) {
-            throw new ManagerSaveException("Ошибка сохранения");
+            throw new ManagerSaveException("Ошибка сохранения", e);
         }
     }
 
-
     public static FileBackedTaskManager loadFromFile(File file) {
-        FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(file);
+        FileBackedTaskManager fileBackedTaskManager = Managers.getFileBackedTaskManager(file);
 
         try {
             List<String> strings = Files.readAllLines(file.toPath());
@@ -72,9 +83,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                         break;
                 }
             }
-
         } catch (IOException e) {
-            throw new ManagerSaveException("Ошибка чтения");
+            throw new ManagerSaveException("Ошибка чтения", e);
         }
         return fileBackedTaskManager;
     }
@@ -84,7 +94,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         if (task instanceof Subtask) {
             epicId = String.valueOf(((Subtask) task).getEpicId());
         }
-        return String.format("%d,%s,%s,%s,%s,%s", task.getId(), task.taskType(), task.getName(), task.getStatus(),
+        return String.format("%d,%s,%s,%s,%s,%s", task.getId(), task.getTaskType(), task.getName(), task.getStatus(),
                 task.getDescription(), epicId);
     }
 
@@ -165,24 +175,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         super.deleteEpicById(epicId);
         save();
     }
-
-    public static void main(String[] args) throws IOException {
-        File tempFile = File.createTempFile("tempFile", ".csv");
-        FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(tempFile);
-        Task task1 = fileBackedTaskManager.createTask(new Task("Задача 1", "Описание задачи 1"));
-        Task task2 = fileBackedTaskManager.createTask(new Task("Задача 2", "Описание задачи 2"));
-        Epic epic1 = fileBackedTaskManager.createEpic(new Epic("Эпик 1", "Описание эпика 1"));
-        Subtask subtask1 = fileBackedTaskManager.createSubtask(new Subtask("Подзадача 1-1", "Описание подзадачи 1-1",
-                epic1.getId()));
-        Subtask subtask2 = fileBackedTaskManager.createSubtask(new Subtask("Подзадача 1-2", "Описание подзадачи 1-2",
-                epic1.getId()));
-        Epic epic2 = fileBackedTaskManager.createEpic(new Epic("Эпик 2", "Описание эпика 2"));
-        FileBackedTaskManager loadedManager = FileBackedTaskManager.loadFromFile(tempFile);
-        System.out.println(loadedManager.getAllTasks());
-        System.out.println(loadedManager.getAllEpics());
-        System.out.println(loadedManager.getAllSubtasks());
-        tempFile.deleteOnExit();
-    }
 }
+
 
 
