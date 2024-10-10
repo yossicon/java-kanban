@@ -5,11 +5,10 @@ import task.Subtask;
 import task.Task;
 
 import java.io.File;
-import java.io.IOException;
 
 public class Main {
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         File file = new File("./src", "file.csv");
 
         FileBackedTaskManager fileBackedTaskManager = Managers.getFileBackedTaskManager(file);

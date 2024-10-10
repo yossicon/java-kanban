@@ -11,7 +11,7 @@ import java.nio.file.Paths;
 import java.util.List;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
-    private File file;
+    private final File file;
     private static final String pathToFile = "./src";
 
     public FileBackedTaskManager(File file) {
@@ -21,12 +21,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     public void save() {
         try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file))) {
             bufferedWriter.write("id,type,name,status,description,epic\n");
-
-            if (file.isFile()) {
-                file.delete();
-            }
-
-            file = new File(pathToFile, "file.csv");
 
             if (!Files.exists(file.toPath())) {
                 Files.createFile(Paths.get(pathToFile, "file.csv"));
