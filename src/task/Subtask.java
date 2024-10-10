@@ -2,6 +2,7 @@ package task;
 
 public class Subtask extends Task {
     private final Integer epicId;
+    private static final TaskType taskType = TaskType.SUBTASK;
 
     public Subtask(String name, String description, Integer epicId) {
         super(name, description);
@@ -15,6 +16,11 @@ public class Subtask extends Task {
 
     public Integer getEpicId() {
         return epicId;
+    }
+
+    @Override
+    public TaskType getTaskType() {
+        return taskType;
     }
 
     @Override
