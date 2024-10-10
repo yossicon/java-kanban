@@ -49,8 +49,8 @@ class FileBackedTaskManagerTest {
                 epic1.getId()));
         Epic epic2 = fileBackedTaskManager.createEpic(new Epic("Эпик 2", "Описание эпика 2"));
         FileBackedTaskManager loadedManager = FileBackedTaskManager.loadFromFile(file);
-        //assertEquals(fileBackedTaskManager.getAllTasks(), loadedManager.getAllTasks(),
-               // "Сохранённые и загруженные задачи не совпадают");
+        assertEquals(fileBackedTaskManager.getAllTasks(), loadedManager.getAllTasks(),
+                "Сохранённые и загруженные задачи не совпадают");
         assertEquals(fileBackedTaskManager.getAllEpics(), loadedManager.getAllEpics(),
                 "Сохранённые и загруженные эпики не совпадают");
         assertEquals(fileBackedTaskManager.getAllSubtasks(), loadedManager.getAllSubtasks(),
