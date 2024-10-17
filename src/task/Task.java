@@ -7,6 +7,7 @@ public class Task {
     private String name;
     private String description;
     private Status status;
+    private final TaskType taskType = TaskType.TASK;
 
     public Task(String name, String description) {
         this.name = name;
@@ -59,6 +60,10 @@ public class Task {
         this.status = status;
     }
 
+    public TaskType getTaskType() {
+        return taskType;
+    }
+
     @Override
     public String toString() {
         return "Task{" +
@@ -66,6 +71,7 @@ public class Task {
                 ", name='" + getName() + '\'' +
                 ", description='" + getDescription() + '\'' +
                 ", status=" + getStatus() +
+                ", taskType=" + getTaskType() +
                 '}';
     }
 
