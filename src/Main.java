@@ -1,5 +1,4 @@
 import manager.FileBackedTaskManager;
-import manager.Managers;
 import task.Epic;
 import task.Subtask;
 import task.Task;
@@ -9,9 +8,9 @@ import java.io.File;
 public class Main {
 
     public static void main(String[] args) {
-        File file = new File("./src", "file.csv");
+        File file = new File("./src/resources", "file.csv");
 
-        FileBackedTaskManager fileBackedTaskManager = Managers.getFileBackedTaskManager(file);
+        FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(file);
 
         Task task1 = fileBackedTaskManager.createTask(new Task("Задача 1", "Описание задачи 1"));
         Task task2 = fileBackedTaskManager.createTask(new Task("Задача 2", "Описание задачи 2"));

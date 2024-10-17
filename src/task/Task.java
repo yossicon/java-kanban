@@ -7,7 +7,7 @@ public class Task {
     private String name;
     private String description;
     private Status status;
-    private static final TaskType taskType = TaskType.TASK;
+    private final TaskType taskType = TaskType.TASK;
 
     public Task(String name, String description) {
         this.name = name;
@@ -71,6 +71,7 @@ public class Task {
                 ", name='" + getName() + '\'' +
                 ", description='" + getDescription() + '\'' +
                 ", status=" + getStatus() +
+                ", taskType=" + getTaskType() +
                 '}';
     }
 

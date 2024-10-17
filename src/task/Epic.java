@@ -5,7 +5,7 @@ import java.util.List;
 
 public class Epic extends Task {
     private final List<Subtask> subtasksList = new ArrayList<>();
-    private static final TaskType taskType = TaskType.EPIC;
+    private final TaskType taskType = TaskType.EPIC;
 
     public Epic(String name, String description) {
         super(name, description);
@@ -36,6 +36,7 @@ public class Epic extends Task {
                 ", description='" + getDescription() + '\'' +
                 ", status=" + getStatus() +
                 ", subtasksList=" + getSubtasksList() +
+                ", taskType=" + getTaskType() +
                 '}';
     }
 

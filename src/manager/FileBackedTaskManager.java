@@ -11,11 +11,15 @@ import java.nio.file.Paths;
 import java.util.List;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
-    private final File file;
-    private static final String pathToFile = "./src";
+    private File file;
+    private static final String PATH_TO_FILE = "./src/resources";
 
     public FileBackedTaskManager(File file) {
         this.file = file;
+    }
+
+    public FileBackedTaskManager() {
+
     }
 
     public void save() {
@@ -23,7 +27,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             bufferedWriter.write("id,type,name,status,description,epic\n");
 
             if (!Files.exists(file.toPath())) {
-                Files.createFile(Paths.get(pathToFile, "file.csv"));
+                Files.createFile(Paths.get(PATH_TO_FILE, "file.csv"));
             }
 
             for (Task task : getAllTasks()) {
@@ -47,9 +51,9 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     public static FileBackedTaskManager loadFromFile(File file) {
         if (!file.isFile()) {
-            file = new File(pathToFile, "file.csv");
+            file = new File(PATH_TO_FILE, "file.csv");
         }
-        FileBackedTaskManager fileBackedTaskManager = Managers.getFileBackedTaskManager(file);
+        FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(file);
 
         try {
             List<String> strings = Files.readAllLines(file.toPath());
