@@ -5,6 +5,7 @@ import task.Subtask;
 import task.Task;
 
 import java.util.List;
+import java.util.TreeSet;
 
 public interface TaskManager {
     //получение списка всех задач
@@ -53,4 +54,6 @@ public interface TaskManager {
     void deleteSubtaskById(Integer subtaskId);
 
     List<Task> getHistory();
+
+    TreeSet<Task> getPrioritizedTasks();
 }

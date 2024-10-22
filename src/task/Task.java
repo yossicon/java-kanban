@@ -1,5 +1,7 @@
 package task;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class Task {
@@ -7,7 +9,36 @@ public class Task {
     private String name;
     private String description;
     private Status status;
+    private Duration duration;
+    private LocalDateTime startTime;
     private final TaskType taskType = TaskType.TASK;
+
+    public Task(String name, String description, LocalDateTime startTime, Duration duration) {
+        this.name = name;
+        this.description = description;
+        this.status = Status.NEW;
+        this.startTime = startTime;
+        this.duration = duration;
+    }
+
+    public Task(Integer id, String name, String description, LocalDateTime startTime, Duration duration) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.startTime = startTime;
+        this.duration = duration;
+    }
+
+
+    public Task(Integer id, String name, String description, Status status, LocalDateTime startTime,
+                Duration duration) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.status = status;
+        this.startTime = startTime;
+        this.duration = duration;
+    }
 
     public Task(String name, String description) {
         this.name = name;
@@ -65,6 +96,32 @@ public class Task {
     }
 
     @Override
+    public int hashCode() {
+        return Objects.hash(id, name, description, status);
+    }
+
+    public Duration getDuration() {
+        return duration;
+    }
+
+    public void setDuration(Duration duration) {
+        this.duration = duration;
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public LocalDateTime getEndTime() {
+        return startTime.plus(duration);
+    }
+
+
+    @Override
     public String toString() {
         return "Task{" +
                 "id=" + getId() +
@@ -72,6 +129,9 @@ public class Task {
                 ", description='" + getDescription() + '\'' +
                 ", status=" + getStatus() +
                 ", taskType=" + getTaskType() +
+                ", startTime=" + getStartTime() +
+                ", endTime=" + getEndTime() +
+                ", duration=" + getDuration().toMinutes() +
                 '}';
     }
 
@@ -84,8 +144,4 @@ public class Task {
                 && Objects.equals(description, task.description) && status == task.status;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name, description, status);
-    }
 }

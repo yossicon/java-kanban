@@ -13,6 +13,12 @@ class ManagersTest {
     }
 
     @Test
+    void shouldNotNullWhenGetFileBackedTaskManager() {
+         FileBackedTaskManager fileBackedTaskManager = Managers.getFileBackedTaskManager();
+         assertNotNull(fileBackedTaskManager, "Экземпляр менеджера не проинициализирован");
+    }
+
+    @Test
     void shouldNotNullWhenGetHistoryDefault() {
         HistoryManager historyManager = Managers.getDefaultHistory();
         assertNotNull(historyManager, "Экземпляр менеджера не проинициализирован");
