@@ -11,6 +11,7 @@ public class Task {
     private Status status;
     private Duration duration;
     private LocalDateTime startTime;
+    protected LocalDateTime endTime;
     private final TaskType taskType = TaskType.TASK;
 
     public Task(String name, String description, LocalDateTime startTime, Duration duration) {
@@ -117,9 +118,9 @@ public class Task {
     }
 
     public LocalDateTime getEndTime() {
-        return startTime.plus(duration);
+        endTime = startTime.plus(duration);
+        return endTime;
     }
-
 
     @Override
     public String toString() {
@@ -143,5 +144,4 @@ public class Task {
         return Objects.equals(id, task.id) && Objects.equals(name, task.name)
                 && Objects.equals(description, task.description) && status == task.status;
     }
-
 }

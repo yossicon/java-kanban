@@ -264,7 +264,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
                 LocalDateTime.of(2002, 1, 1, 12, 0), Duration.ofMinutes(20));
         taskManager.createTask(anotherTask);
 
-        TreeSet<Task> prioritizedTasks = taskManager.getPrioritizedTasks();
+        TreeSet<Task> prioritizedTasks = (TreeSet<Task>) taskManager.getPrioritizedTasks();
 
         assertEquals(subtask, prioritizedTasks.first(), "Задача добавлена в приоритет неверно");
         assertEquals(anotherTask, prioritizedTasks.last(), "Задача добавлена в приоритет неверно");
