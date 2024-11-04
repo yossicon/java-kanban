@@ -16,7 +16,7 @@ import java.util.List;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
     private final File file;
-    private static final String PATH_TO_FILE = "./src/resources";
+    private static final String PATH_TO_FILE = "/resources";
 
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
 
