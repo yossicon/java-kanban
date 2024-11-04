@@ -1,5 +1,6 @@
 package manager;
 
+import exceptions.ManagerSaveException;
 import task.*;
 
 import java.io.BufferedWriter;
@@ -8,23 +9,28 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
-    private File file;
-    private static final String PATH_TO_FILE = "./src/resources";
+    private final File file;
+    private static final String PATH_TO_FILE = "/resources";
+
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
 
     public FileBackedTaskManager(File file) {
         this.file = file;
     }
 
     public FileBackedTaskManager() {
-
+        file = new File(PATH_TO_FILE, "file.csv");
     }
 
     public void save() {
         try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file))) {
-            bufferedWriter.write("id,type,name,status,description,epic\n");
+            bufferedWriter.write("id,type,name,status,description,epic,start,duration\n");
 
             if (!Files.exists(file.toPath())) {
                 Files.createFile(Paths.get(PATH_TO_FILE, "file.csv"));
@@ -63,23 +69,30 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 String name = fields[2];
                 Status status = Status.valueOf(fields[3]);
                 String description = fields[4];
+                Duration duration = Duration.ofMinutes(Long.parseLong(fields[7]));
 
                 if (id > fileBackedTaskManager.nextId) {
                     fileBackedTaskManager.nextId = id;
                 }
                 switch (TaskType.valueOf(fields[1])) {
                     case TASK:
-                        Task task = new Task(id, name, description, status);
+                        Task task = new Task(id, name, description, status,
+                                LocalDateTime.parse(fields[6], formatter), duration);
                         fileBackedTaskManager.tasks.put(task.getId(), task);
                         break;
                     case EPIC:
                         Epic epic = new Epic(id, name, description);
                         fileBackedTaskManager.epics.put(epic.getId(), epic);
+                        fileBackedTaskManager.calculateEpicDuration(epic);
                         break;
                     case SUBTASK:
-                        Subtask subtask = new Subtask(id, name, description, status, Integer.parseInt(fields[5]));
+                        Subtask subtask = new Subtask(id, name, description, status,
+                                LocalDateTime.parse(fields[6], formatter), duration, Integer.parseInt(fields[5]));
+                        Epic epicOfSubtask = fileBackedTaskManager.epics.get(subtask.getEpicId());
                         fileBackedTaskManager.subtasks.put(subtask.getId(), subtask);
-                        fileBackedTaskManager.epics.get(subtask.getEpicId()).addSubtask(subtask);
+                        epicOfSubtask.addSubtask(subtask);
+                        fileBackedTaskManager.calculateEpicDuration(epicOfSubtask);
+                        fileBackedTaskManager.updateEpicStatus(epicOfSubtask);
                         break;
                 }
             }
@@ -91,11 +104,22 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     private String toString(Task task) {
         String epicId = "";
+        String startTime;
+        long duration;
+
         if (task instanceof Subtask) {
             epicId = String.valueOf(((Subtask) task).getEpicId());
         }
-        return String.format("%d,%s,%s,%s,%s,%s", task.getId(), task.getTaskType(), task.getName(), task.getStatus(),
-                task.getDescription(), epicId);
+
+        if (task.getStartTime() == null || task.getDuration() == null) {
+            startTime = null;
+            duration = 0;
+        } else {
+            startTime = task.getStartTime().format(formatter);
+            duration = task.getDuration().toMinutes();
+        }
+        return String.format("%d,%s,%s,%s,%s,%s,%s,%d", task.getId(), task.getTaskType(), task.getName(),
+                task.getStatus(), task.getDescription(), epicId, startTime, duration);
     }
 
     @Override

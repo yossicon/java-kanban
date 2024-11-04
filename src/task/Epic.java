@@ -1,5 +1,6 @@
 package task;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,6 +25,15 @@ public class Epic extends Task {
     }
 
     @Override
+    public LocalDateTime getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
+    }
+
+    @Override
     public TaskType getTaskType() {
         return taskType;
     }
@@ -37,7 +47,9 @@ public class Epic extends Task {
                 ", status=" + getStatus() +
                 ", subtasksList=" + getSubtasksList() +
                 ", taskType=" + getTaskType() +
+                ", startTime=" + getStartTime() +
+                ", endTime=" + getEndTime() +
+                ", duration=" + getDuration() +
                 '}';
     }
-
 }
