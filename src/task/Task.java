@@ -12,7 +12,6 @@ public class Task {
     private Duration duration;
     private LocalDateTime startTime;
     protected LocalDateTime endTime;
-    private final TaskType taskType = TaskType.TASK;
 
     public Task(String name, String description, LocalDateTime startTime, Duration duration) {
         this.name = name;
@@ -21,15 +20,6 @@ public class Task {
         this.startTime = startTime;
         this.duration = duration;
     }
-
-    public Task(Integer id, String name, String description, LocalDateTime startTime, Duration duration) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.startTime = startTime;
-        this.duration = duration;
-    }
-
 
     public Task(Integer id, String name, String description, Status status, LocalDateTime startTime,
                 Duration duration) {
@@ -52,12 +42,6 @@ public class Task {
         this.name = name;
         this.description = description;
         this.status = status;
-    }
-
-    public Task(Integer id, String name, String description) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
     }
 
     public Integer getId() {
@@ -93,7 +77,7 @@ public class Task {
     }
 
     public TaskType getTaskType() {
-        return taskType;
+        return TaskType.TASK;
     }
 
     @Override

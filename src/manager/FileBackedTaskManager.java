@@ -118,7 +118,9 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             startTime = task.getStartTime().format(formatter);
             duration = task.getDuration().toMinutes();
         }
-        return String.format("%d,%s,%s,%s,%s,%s,%s,%d", task.getId(), task.getTaskType(), task.getName(),
+        return String.format("%d,%s,%s,%s,%s,%s,%s,%d", task.getId(),
+                task.getTaskType(),
+                task.getName(),
                 task.getStatus(), task.getDescription(), epicId, startTime, duration);
     }
 

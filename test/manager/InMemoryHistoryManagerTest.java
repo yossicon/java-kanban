@@ -2,6 +2,7 @@ package manager;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import task.Status;
 import task.Task;
 
 import java.time.Duration;
@@ -21,11 +22,11 @@ class InMemoryHistoryManagerTest {
     @BeforeEach
     void beforeEach() {
         historyManager = Managers.getDefaultHistory();
-        task1 = new Task(1, "Задача", "Описание задачи",
+        task1 = new Task(1, "Задача", "Описание задачи", Status.NEW,
                 LocalDateTime.of(2024, 10, 19, 22, 0), Duration.ofMinutes(20));
-        task2 = new Task(2, "Задача1", "Описание1",
+        task2 = new Task(2, "Задача1", "Описание1", Status.NEW,
                 LocalDateTime.of(2020, 11, 20, 22, 0), Duration.ofMinutes(20));
-        task3 = new Task(3, "Задача1", "Описание1",
+        task3 = new Task(3, "Задача1", "Описание1", Status.NEW,
                 LocalDateTime.of(2021, 11, 20, 22, 0), Duration.ofMinutes(20));
     }
 

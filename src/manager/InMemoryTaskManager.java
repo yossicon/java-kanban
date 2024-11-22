@@ -90,8 +90,10 @@ public class InMemoryTaskManager implements TaskManager {
     //создание задач
     @Override
     public Task createTask(Task task) {
-        if (isOverlap(task)) {
-            throw new TaskOverlapException("Задача пересекается по времени выполнения с существующей задачей.");
+        if (task.getStartTime() != null) {
+            if (isOverlap(task)) {
+                throw new TaskOverlapException("Задача пересекается по времени выполнения с существующей задачей.");
+            }
         }
         task.setId(getNextId());
         tasks.put(task.getId(), task);
@@ -126,16 +128,18 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Task updateTask(Task task) {
         Integer taskId = task.getId();
-        Task previousTask = tasks.get(taskId);
-        if (previousTask != null) {
-            prioritizedTasks.remove(previousTask);
-            if (isOverlap(task)) {
-                prioritizedTasks.add(previousTask);
-                throw new TaskOverlapException("Задача пересекается по времени выполнения с существующей задачей.");
+        if (task.getStartTime() != null) {
+            Task previousTask = tasks.get(taskId);
+            if (previousTask != null) {
+                prioritizedTasks.remove(previousTask);
+                if (isOverlap(task)) {
+                    prioritizedTasks.add(previousTask);
+                    throw new TaskOverlapException("Задача пересекается по времени выполнения с существующей задачей.");
+                }
             }
+            prioritizedTasks.add(task);
         }
         tasks.put(taskId, task);
-        prioritizedTasks.add(task);
         return task;
     }
 

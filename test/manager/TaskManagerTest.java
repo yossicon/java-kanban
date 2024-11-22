@@ -4,6 +4,7 @@ import exceptions.TaskOverlapException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import task.Epic;
+import task.Status;
 import task.Subtask;
 import task.Task;
 
@@ -89,7 +90,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     //проверьте, что задачи с заданным id и сгенерированным id не конфликтуют внутри менеджера
     @Test
     void addAndGeneratedIdsShouldBeEqual() {
-        Task generatedTask = new Task(1, "Задача1", "Описание1");
+        Task generatedTask = new Task(1, "Задача1", "Описание1", Status.NEW);
 
         assertEquals(task1.getId(), generatedTask.getId(), "Задачи конфликтуют");
     }
@@ -188,7 +189,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     void shouldUpdateTask() {
-        Task taskToUpdate = new Task(task1.getId(), "Новое имя", "Описание",
+        Task taskToUpdate = new Task(task1.getId(), "Новое имя", "Описание", Status.NEW,
                 LocalDateTime.of(2030, 11, 20, 22, 0), Duration.ofMinutes(20));
         taskManager.updateTask(taskToUpdate);
         List<Task> tasks = taskManager.getAllTasks();
