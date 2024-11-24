@@ -12,13 +12,14 @@ import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 
 public class SubtaskHandler extends BaseHttpHandler {
+    private final TaskManager taskManager;
 
     public SubtaskHandler(TaskManager taskManager) {
-        super(taskManager);
+        this.taskManager = taskManager;
     }
 
     @Override
-    public void handle(HttpExchange exchange) throws IOException {
+    public void handle(HttpExchange exchange) {
         System.out.println("Началась обработка /subtasks запроса от клиента.");
         String path = exchange.getRequestURI().getPath();
         String requestMethod = exchange.getRequestMethod();
@@ -37,7 +38,7 @@ public class SubtaskHandler extends BaseHttpHandler {
                 default:
                     System.out.println("Запрос не соответствует ожидаемому (GET, POST или DELETE). Получен запрос: "
                             + requestMethod);
-                    exchange.sendResponseHeaders(405, 0);
+                    sendMethodNotAllowed(exchange);
             }
         } catch (RuntimeException e) {
             e.printStackTrace();
@@ -46,7 +47,7 @@ public class SubtaskHandler extends BaseHttpHandler {
         }
     }
 
-    private void handleGetSubtask(HttpExchange exchange, String path) throws IOException {
+    private void handleGetSubtask(HttpExchange exchange, String path) {
         try {
             if (Pattern.matches("^/subtasks/\\d+$", path)) {
                 String pathId = path.replaceFirst("/subtasks/", "");
@@ -72,9 +73,12 @@ public class SubtaskHandler extends BaseHttpHandler {
         }
     }
 
-    private void handlePostSubtask(HttpExchange exchange, String path) throws IOException {
+    private void handlePostSubtask(HttpExchange exchange, String path) {
         try (InputStream bodyInputStream = exchange.getRequestBody()) {
             String body = new String(bodyInputStream.readAllBytes(), StandardCharsets.UTF_8);
+            if (body.isBlank()) {
+                sendBadRequest(exchange, "Тело запроса пустое");
+            }
             try {
                 if (Pattern.matches("^/subtasks/\\d+$", path)) {
                     String pathId = path.replaceFirst("/subtasks/", "");
@@ -108,10 +112,12 @@ public class SubtaskHandler extends BaseHttpHandler {
             } catch (Exception e) {
                 sendInternalServerError(exchange);
             }
+        } catch (IOException e) {
+            System.out.println("Ошибка при получении запроса: " + e.getMessage());
         }
     }
 
-    private void handleDeleteSubtask(HttpExchange exchange, String path) throws IOException {
+    private void handleDeleteSubtask(HttpExchange exchange, String path) {
         try {
             if (Pattern.matches("^/subtasks/\\d+$", path)) {
                 String pathId = path.replaceFirst("/subtasks/", "");

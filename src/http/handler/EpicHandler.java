@@ -11,13 +11,14 @@ import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 
 public class EpicHandler extends BaseHttpHandler {
+    private final TaskManager taskManager;
 
     public EpicHandler(TaskManager taskManager) {
-        super(taskManager);
+        this.taskManager = taskManager;
     }
 
     @Override
-    public void handle(HttpExchange exchange) throws IOException {
+    public void handle(HttpExchange exchange) {
         System.out.println("Началась обработка /epics запроса от клиента.");
         String path = exchange.getRequestURI().getPath();
         String requestMethod = exchange.getRequestMethod();
@@ -36,7 +37,7 @@ public class EpicHandler extends BaseHttpHandler {
                 default:
                     System.out.println("Запрос не соответствует ожидаемому (GET, POST или DELETE). Получен запрос: "
                             + requestMethod);
-                    exchange.sendResponseHeaders(405, 0);
+                    sendMethodNotAllowed(exchange);
             }
         } catch (RuntimeException e) {
             e.printStackTrace();
@@ -45,7 +46,7 @@ public class EpicHandler extends BaseHttpHandler {
         }
     }
 
-    private void handleGetEpic(HttpExchange exchange, String path) throws IOException {
+    private void handleGetEpic(HttpExchange exchange, String path) {
         try {
             if (Pattern.matches("^/epics/\\d+$", path)) {
                 String pathId = path.replaceFirst("/epics/", "");
@@ -84,9 +85,12 @@ public class EpicHandler extends BaseHttpHandler {
         }
     }
 
-    private void handlePostEpic(HttpExchange exchange, String path) throws IOException {
+    private void handlePostEpic(HttpExchange exchange, String path) {
         try (InputStream bodyInputStream = exchange.getRequestBody()) {
             String body = new String(bodyInputStream.readAllBytes(), StandardCharsets.UTF_8);
+            if (body.isBlank()) {
+                sendBadRequest(exchange, "Тело запроса пустое");
+            }
             try {
                 if (Pattern.matches("^/epics$", path)) {
                     Epic epic = getGson().fromJson(body, Epic.class);
@@ -100,10 +104,12 @@ public class EpicHandler extends BaseHttpHandler {
             } catch (Exception e) {
                 sendInternalServerError(exchange);
             }
+        } catch (IOException e) {
+            System.out.println("Ошибка при получении запроса: " + e.getMessage());
         }
     }
 
-    private void handleDeleteEpic(HttpExchange exchange, String path) throws IOException {
+    private void handleDeleteEpic(HttpExchange exchange, String path) {
         if (Pattern.matches("^/epics/\\d+$", path)) {
             String pathId = path.replaceFirst("/epics/", "");
             int id = parsePathId(pathId);

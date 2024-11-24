@@ -11,14 +11,11 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
     private final File file;
     private static final String PATH_TO_FILE = "/resources";
-
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
 
     public FileBackedTaskManager(File file) {
         this.file = file;
@@ -77,7 +74,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 switch (TaskType.valueOf(fields[1])) {
                     case TASK:
                         Task task = new Task(id, name, description, status,
-                                LocalDateTime.parse(fields[6], formatter), duration);
+                                LocalDateTime.parse(fields[6], DateTimeUtil.FORMATTER), duration);
                         fileBackedTaskManager.tasks.put(task.getId(), task);
                         break;
                     case EPIC:
@@ -87,7 +84,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                         break;
                     case SUBTASK:
                         Subtask subtask = new Subtask(id, name, description, status,
-                                LocalDateTime.parse(fields[6], formatter), duration, Integer.parseInt(fields[5]));
+                                LocalDateTime.parse(fields[6], DateTimeUtil.FORMATTER), duration, Integer.parseInt(fields[5]));
                         Epic epicOfSubtask = fileBackedTaskManager.epics.get(subtask.getEpicId());
                         fileBackedTaskManager.subtasks.put(subtask.getId(), subtask);
                         epicOfSubtask.addSubtask(subtask);
@@ -115,7 +112,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             startTime = null;
             duration = 0;
         } else {
-            startTime = task.getStartTime().format(formatter);
+            startTime = task.getStartTime().format(DateTimeUtil.FORMATTER);
             duration = task.getDuration().toMinutes();
         }
         return String.format("%d,%s,%s,%s,%s,%s,%s,%d", task.getId(),

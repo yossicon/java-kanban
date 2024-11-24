@@ -6,13 +6,12 @@ import com.google.gson.JsonParser;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import manager.DateTimeUtil;
 import task.Epic;
 
 import java.io.IOException;
-import java.time.format.DateTimeFormatter;
 
 public class EpicAdapter extends TypeAdapter<Epic> {
-    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
 
     @Override
     public void write(JsonWriter jsonWriter, Epic epic) throws IOException {
@@ -32,13 +31,13 @@ public class EpicAdapter extends TypeAdapter<Epic> {
         if (epic.getStartTime() == null) {
             jsonWriter.name("startTime").nullValue();
         } else {
-            jsonWriter.name("startTime").value(epic.getStartTime().format(formatter));
+            jsonWriter.name("startTime").value(epic.getStartTime().format(DateTimeUtil.FORMATTER));
         }
         jsonWriter.endObject();
     }
 
     @Override
-    public Epic read(JsonReader jsonReader) throws IOException {
+    public Epic read(JsonReader jsonReader) {
         Epic epic;
         JsonElement jsonElement = JsonParser.parseReader(jsonReader);
 

@@ -12,12 +12,14 @@ import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 
 public class TaskHandler extends BaseHttpHandler {
+    private final TaskManager taskManager;
+
     public TaskHandler(TaskManager taskManager) {
-        super(taskManager);
+        this.taskManager = taskManager;
     }
 
     @Override
-    public void handle(HttpExchange exchange) throws IOException {
+    public void handle(HttpExchange exchange) {
         System.out.println("Началась обработка /tasks запроса от клиента.");
         String path = exchange.getRequestURI().getPath();
         String requestMethod = exchange.getRequestMethod();
@@ -36,7 +38,7 @@ public class TaskHandler extends BaseHttpHandler {
                 default:
                     System.out.println("Запрос не соответствует ожидаемому (GET, POST или DELETE). Получен запрос: "
                             + requestMethod);
-                    exchange.sendResponseHeaders(405, 0);
+                    sendMethodNotAllowed(exchange);
             }
         } catch (RuntimeException e) {
             e.printStackTrace();
@@ -45,7 +47,7 @@ public class TaskHandler extends BaseHttpHandler {
         }
     }
 
-    private void handleGetTask(HttpExchange exchange, String path) throws IOException {
+    private void handleGetTask(HttpExchange exchange, String path) {
         try {
             if (Pattern.matches("^/tasks/\\d+$", path)) {
                 String pathId = path.replaceFirst("/tasks/", "");
@@ -71,9 +73,12 @@ public class TaskHandler extends BaseHttpHandler {
         }
     }
 
-    private void handlePostTask(HttpExchange exchange, String path) throws IOException {
+    private void handlePostTask(HttpExchange exchange, String path) {
         try (InputStream bodyInputStream = exchange.getRequestBody()) {
             String body = new String(bodyInputStream.readAllBytes(), StandardCharsets.UTF_8);
+            if (body.isBlank()) {
+                sendBadRequest(exchange, "Тело запроса пустое");
+            }
             try {
                 if (Pattern.matches("^/tasks/\\d+$", path)) {
                     String pathId = path.replaceFirst("/tasks/", "");
@@ -103,10 +108,12 @@ public class TaskHandler extends BaseHttpHandler {
             } catch (Exception e) {
                 sendInternalServerError(exchange);
             }
+        } catch (IOException e) {
+            System.out.println("Ошибка при получении запроса: " + e.getMessage());
         }
     }
 
-    private void handleDeleteTask(HttpExchange exchange, String path) throws IOException {
+    private void handleDeleteTask(HttpExchange exchange, String path) {
         try {
             if (Pattern.matches("^/tasks/\\d+$", path)) {
                 String pathId = path.replaceFirst("/tasks/", "");

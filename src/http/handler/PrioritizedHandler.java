@@ -3,17 +3,18 @@ package http.handler;
 import com.sun.net.httpserver.HttpExchange;
 import manager.TaskManager;
 
-import java.io.IOException;
 import java.util.regex.Pattern;
 
 public class PrioritizedHandler extends BaseHttpHandler {
 
+    private final TaskManager taskManager;
+
     public PrioritizedHandler(TaskManager taskManager) {
-        super(taskManager);
+        this.taskManager = taskManager;
     }
 
     @Override
-    public void handle(HttpExchange exchange) throws IOException {
+    public void handle(HttpExchange exchange) {
         System.out.println("Началась обработка /prioritized запроса от клиента.");
         String path = exchange.getRequestURI().getPath();
         String requestMethod = exchange.getRequestMethod();
@@ -35,7 +36,7 @@ public class PrioritizedHandler extends BaseHttpHandler {
         } else {
             System.out.println("Запрос не соответствует ожидаемому (GET). Получен запрос: "
                     + requestMethod);
-            exchange.sendResponseHeaders(405, 0);
+            sendMethodNotAllowed(exchange);
         }
         exchange.close();
     }
