@@ -264,6 +264,22 @@ public class HttpTaskManagerSubtasksTest {
     }
 
     @Test
+    public void shouldReturnBadRequestWhenBodyIsEmpty() throws IOException, InterruptedException {
+        String emptyString = "";
+        HttpClient client = HttpClient.newHttpClient();
+        URI url = URI.create("http://localhost:8080/subtasks");
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(url)
+                .POST(HttpRequest.BodyPublishers.ofString(emptyString))
+                .build();
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        assertEquals(400, response.statusCode());
+        assertEquals("Тело запроса пустое", response.body(),
+
+                "Тело ответа не соответсвует ожидаемому");
+    }
+
+    @Test
     public void shouldReturnBadRequestWhenEndpointNonExistent() throws IOException, InterruptedException {
         HttpClient client = HttpClient.newHttpClient();
         URI url = URI.create("http://localhost:8080/subtasks/non-existent");
